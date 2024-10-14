@@ -2,9 +2,9 @@
 const Redis = require("ioredis");
 
 const redisClient = new Redis({
-  host: "redis-12477.c305.ap-south-1-1.ec2.redns.redis-cloud.com",
-  port: 12477,
-  password: "o0kzoFP0SKK22lFF4xFLEFVaVeTAqjix",
+  host: process.env.REDIS_HOST,
+  port: process.env.REDIS_PORT,
+  password:process.env.REDIS_PASS,
 });
 
 redisClient.on("connect", () => {

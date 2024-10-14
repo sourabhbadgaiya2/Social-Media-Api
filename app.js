@@ -40,6 +40,9 @@ app.use(cookieParser());
 app.use("/user", require("./routes/userRoutes"));
 app.use("/post", require("./routes/postRoutes"));
 app.use("/notification", require("./routes/notificationsRouter"));
+app.use("/search", require("./routes/searchRoutes"));
+app.use("/explore", require("./routes/exploreRoutes"));
+app.use("/feed", require("./routes/feedRoutes"));
 
 //error Handler
 const ErrorHandler = require("./utils/ErrorHandler");

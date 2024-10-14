@@ -49,6 +49,47 @@ exports.getuserprofilebyId = catchAsyncError(async (req, res) => {
   res.json(user);
 });
 
+// exports.followUnfollowUser = catchAsyncError(async (req, res) => {
+//   const userToFollow = await userSchema.findById(req.params.id);
+//   const currentUser = await userSchema.findById(req.user.id);
+
+//   if (!userToFollow) {
+//     return res.status(404).json({ msg: "User not found" });
+//   }
+
+//   if (
+//     userToFollow.followers.some(
+//       (follower) => follower.toString() === req.user.id
+//     )
+//   ) {
+//     // Unfollow the user
+//     userToFollow.followers = userToFollow.followers.filter(
+//       (follower) => follower.toString() !== req.user.id
+//     );
+//     currentUser.following = currentUser.following.filter(
+//       (following) => following.toString() !== req.params.id
+//     );
+//   } else {
+//     // Follow the user
+//     userToFollow.followers.unshift(req.user.id);
+//     currentUser.following.unshift(req.params.id);
+
+//     // Send follow notification
+//     sendNotification(
+//       userToFollow.id,
+//       `${currentUser.username} started following you`
+//     );
+//   }
+
+//   await userToFollow.save();
+//   await currentUser.save();
+
+//   res.json({
+//     followers: userToFollow.followers,
+//     following: currentUser.following,
+//   });
+// });
+
 exports.followUnfollowUser = catchAsyncError(async (req, res) => {
   const userToFollow = await userSchema.findById(req.params.id);
   const currentUser = await userSchema.findById(req.user.id);
@@ -81,12 +122,21 @@ exports.followUnfollowUser = catchAsyncError(async (req, res) => {
     );
   }
 
-  await userToFollow.save();
-  await currentUser.save();
+  // Fetch the updated documents again
+  const updatedUserToFollow = await userSchema.findByIdAndUpdate(
+    userToFollow.id,
+    { followers: userToFollow.followers },
+    { new: true, runValidators: true }
+  );
+
+  const updatedCurrentUser = await userSchema.findByIdAndUpdate(
+    currentUser.id,
+    { following: currentUser.following },
+    { new: true, runValidators: true }
+  );
 
   res.json({
-    followers: userToFollow.followers,
-    following: currentUser.following,
+    followers: updatedUserToFollow.followers,
+    following: updatedCurrentUser.following,
   });
 });
-
